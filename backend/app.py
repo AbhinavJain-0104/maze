@@ -35,8 +35,8 @@ def preprocess_image(image: Image.Image) -> np.ndarray:
     if image.mode != 'L':
         image = image.convert('L')
 
-    # Invert image so that walls are black (0), paths are white (255)
-    image = ImageOps.invert(image)
+    # Do NOT invert image; assume black is wall, white is path
+    # image = ImageOps.invert(image)
 
     # Convert to numpy array
     arr = np.array(image)
@@ -80,14 +80,17 @@ def image_to_grid(img: str):
     img_path = os.path.join(IMAGES_FOLDER, img)
     image = Image.open(img_path).convert("L")  # Grayscale
 
-    # Optionally resize if too large for frontend
-    max_dim = 100  # Adjust as needed for your UI
+    # Increase grid size for better wall preservation
+    max_dim = 200  # Increased from 100
     if image.width > max_dim or image.height > max_dim:
         image = image.resize((max_dim, max_dim), Image.NEAREST)
 
     arr = np.array(image)
     # White (>= 200) is wall, black (< 200) is path
     grid = (arr < 200).astype(int).tolist()
+
+    # Print ASCII grid for debugging
+    print("\n".join("".join("#" if cell == 0 else "." for cell in row) for row in grid))
 
     return {"grid": grid}
 
