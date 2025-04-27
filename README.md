@@ -34,7 +34,9 @@ mv build ../backend/
 > ```
 
 ### 5. Add Maze Images
-- Place your maze images (`.jpg`, `.png`, etc.) in the `images/` folder at the root of the project (`maze/images/`).
+- **Important:** Place your maze images (`.jpg`, `.png`, etc.) in the folder:
+  - `C:\maze_test_images` (recommended, especially on Windows)
+- If the folder does not exist, create it manually and copy your images there.
 
 ### 6. Run the Backend (Serves Both API and Frontend)
 ```sh
@@ -50,10 +52,16 @@ Go to [http://localhost:8000](http://localhost:8000) and use the Maze Solver!
 ---
 
 ## 🛠️ Troubleshooting
-- If you see "Failed to load images," make sure:
-  - The backend is running from the `backend` directory.
-  - The `images/` folder exists at the project root and contains images.
-- If you get a port conflict, make sure nothing else is running on port 8000.
+- **Images not loading?**
+  - Make sure your images are in `C:\maze_test_images`.
+  - The backend prints the images directory path on startup. Confirm it matches your images location.
+- **Maze points not mapping correctly?**
+  - Ensure you are running the latest code. The frontend now maps clicks to the grid using the original image size and grid size.
+- **No path found?**
+  - Make sure you are clicking on open paths (not walls) in the maze image.
+  - The grid is generated from a resized version of the image (max 100x100). For best results, use clear, high-contrast maze images.
+- **Port conflict?**
+  - Make sure nothing else is running on port 8000.
 
 ---
 

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const FIXED_THRESHOLD = 200;
-
-const ImageSelector = ({ setSelectedImage, setGrid, onImageChange }) => {
+const ImageSelector = ({ setSelectedImage, onImageChange }) => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,24 +22,10 @@ const ImageSelector = ({ setSelectedImage, setGrid, onImageChange }) => {
     fetchImages();
   }, []);
 
-  const handleSelect = async (img) => {
+  const handleSelect = (img) => {
     setSelected(img);
     setSelectedImage(img);
-    setGrid([]);
     if (onImageChange) onImageChange();
-    if (!img) return;
-    try {
-      setLoading(true);
-      const res = await axios.get(`http://localhost:8000/grid?img=${img}&threshold=${FIXED_THRESHOLD}`);
-      setGrid(res.data.grid);
-      setError(null);
-    } catch (err) {
-      setError("Failed to process image. Please try another one.");
-      setGrid([]);
-      console.error("Failed to process image:", err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (

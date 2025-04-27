@@ -1,15 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ImageSelector from "./components/ImageSelector";
 import MazeCanvas from "./components/MazeCanvas";
 import Controls from "./components/Controls";
+import axios from "axios";
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [grid, setGrid] = useState([]);
   const [starts, setStarts] = useState([]);
   const [ends, setEnds] = useState([]);
   const [path, setPath] = useState([]);
   const [placingMode, setPlacingMode] = useState("start"); // 'start' or 'end'
+  const [grid, setGrid] = useState(null);
+  const [gridError, setGridError] = useState(null);
+
+  // Fetch grid when image changes
+  useEffect(() => {
+    if (!selectedImage) {
+      setGrid(null);
+      setGridError(null);
+      return;
+    }
+    const fetchGrid = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/grid?img=${selectedImage}`);
+        setGrid(res.data.grid);
+        setGridError(null);
+      } catch (err) {
+        setGrid(null);
+        setGridError("Failed to load maze grid.");
+      }
+    };
+    fetchGrid();
+  }, [selectedImage]);
 
   // Clear all points when a new image is selected
   const handleImageChange = () => {
@@ -42,10 +64,21 @@ function App() {
           Maze Solver
         </h1>
         
-        <ImageSelector setSelectedImage={setSelectedImage} setGrid={setGrid} onImageChange={handleImageChange} />
+        <ImageSelector setSelectedImage={setSelectedImage} onImageChange={handleImageChange} />
         
-        {grid.length > 0 && (
+        {selectedImage && (
           <>
+            <MazeCanvas
+              imageName={selectedImage}
+              starts={starts}
+              ends={ends}
+              setStarts={setStarts}
+              setEnds={setEnds}
+              path={path}
+              placingMode={placingMode}
+              setPlacingMode={setPlacingMode}
+              grid={grid}
+            />
             <Controls
               starts={starts}
               ends={ends}
@@ -54,16 +87,7 @@ function App() {
               grid={grid}
               setPath={setPath}
             />
-            <MazeCanvas
-              grid={grid}
-              starts={starts}
-              ends={ends}
-              setStarts={setStarts}
-              setEnds={setEnds}
-              path={path}
-              placingMode={placingMode}
-              setPlacingMode={setPlacingMode}
-            />
+            {gridError && <div style={{color: '#e74c3c', textAlign: 'center', marginTop: 10}}>{gridError}</div>}
           </>
         )}
       </div>
