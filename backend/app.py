@@ -20,9 +20,6 @@ app.add_middleware(
 
 IMAGES_FOLDER = "../images"
 
-# Serve React build as static files
-app.mount("/", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "build"), html=True), name="static")
-
 @app.get("/images")
 def list_images():
     return [f for f in os.listdir(IMAGES_FOLDER) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
@@ -94,3 +91,6 @@ def reconstruct_path(came_from, current):
         current = came_from[current]
         path.append(current)
     return path[::-1]
+
+# Serve React build as static files (MUST BE LAST)
+app.mount("/", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "build"), html=True), name="static")
